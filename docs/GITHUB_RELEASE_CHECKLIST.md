@@ -25,6 +25,12 @@ Get-Content -Raw src-tauri\updater.key.pub
 
 Do not commit `src-tauri/updater.key`. It is already in `.gitignore`.
 
+If GitHub CLI is logged in, this repo also includes a no-print helper:
+
+```powershell
+.\scripts\setup-github-secrets.ps1
+```
+
 ## First publish
 
 ```powershell
@@ -39,8 +45,7 @@ git push -u origin main
 Then make the first release:
 
 ```powershell
-git tag v0.1.0
-git push origin v0.1.0
+.\scripts\release-tag.ps1
 ```
 
 The GitHub Action builds and uploads the Windows exe, MSI, setup exe,
@@ -74,8 +79,7 @@ signatures, and `latest.json`.
 4. Tag the exact same version:
 
    ```powershell
-   git tag v0.2.0
-   git push origin v0.2.0
+   .\scripts\release-tag.ps1 -Version 0.2.0
    ```
 
 ## How Users Receive Updates
