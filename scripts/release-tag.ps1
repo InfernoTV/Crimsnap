@@ -25,7 +25,7 @@ if (git status --porcelain) {
 }
 
 if (git ls-remote --exit-code --tags $Remote "refs/tags/$tag" 1>$null 2>$null) {
-  throw "Tag already exists on $Remote: $tag"
+  throw "Tag already exists on ${Remote}: $tag"
 }
 
 git push $Remote main

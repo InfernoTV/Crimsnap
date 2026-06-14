@@ -1,165 +1,195 @@
 # Crimsnap
 
-> Lightweight crimson-neon screen recorder for Windows. Pick a region, a
-> window, or your whole screen — record one or several of them at the same
-> time, hardware-encoded by your GPU, into clean .mp4 files.
+Lightweight crimson-neon screen recorder for Windows. Pick a region, a
+window, or your whole screen and record one or several views at the same time
+into clean MP4 files.
 
 ```
-   ▰▰  CRIMSNAP   crimson + snap
+  CRIMSNAP - crimson + snap
 ```
 
-A small Tauri + ffmpeg app: the binary is ~6 MB, sips RAM, and ships as a
-single .exe + MSI installer. No background services, no telemetry, no account.
+Crimsnap is a small Tauri + ffmpeg app. It ships as a standalone exe and an
+MSI installer. No account, no telemetry, no background service.
 
-## What it does
+## Features
 
-- **Pick a region** on any monitor with a real-screen preview + draggable
-  rectangle + live numeric inputs, *or* drag directly on your screen
-  Win+Shift+S style.
-- **Capture a specific window** that follows the window when it moves.
-- **Multi-region simultaneous capture** — health bar, loadout, killfeed, and
-  the full screen, all recorded at the same time, each to its own .mp4 file,
-  from a single GPU capture.
-- **Pause / Resume / Stop** with lossless segment-and-concat (the final mp4
-  is one continuous file, no re-encode on stitch).
-- **Resolution caps:** Native / 2160p / 1440p / 1080p / 720p / 480p / 360p
-  / 240p / 144p / Custom (W×H).
-- **FPS:** 24 / 30 / 48 / 60 / 120 / 144 / Custom.
-- **Quality presets:** Low / Balanced / High / Visually lossless, with a
-  live output-bitrate estimate.
-- **GPU encoding, auto-detected:** AMD AMF, NVIDIA NVENC, Intel QSV, Windows
-  Media Foundation, and an x264 CPU fallback. Each is runtime-tested so the
-  app never silently uses a broken encoder.
-- **Audio:** any input device (microphone, Stereo Mix, VB-Cable,
-  virtual-audio-capturer…). One toggle, one device picker.
-- **Always-on-top pin** for over-the-game use.
-- **Named presets** to recall a multi-region layout (health/loadout/killfeed)
-  per game.
-- **Export / import configs** as `.crimsnap.json` so layouts can be backed up
-  or shared.
-- **Signed in-app updates** with changelog preview, passive install progress,
-  and restart prompt.
-- **Multi-monitor** — pick which display to capture or select on.
+- Pick a region on any monitor with a live preview, draggable rectangle, and
+  numeric inputs.
+- Snap a region directly on the real screen, similar to Win+Shift+S.
+- Capture a specific window and keep following it when it moves.
+- Record multiple regions at the same time, each to its own MP4 file.
+- Capture the full screen alongside individual regions.
+- Pause, resume, and stop recordings.
+- Resolution caps from native down to 144p, plus custom height.
+- FPS presets: 24, 30, 48, 60, 120, 144, or custom.
+- Quality presets: Low, Balanced, High, and Visually lossless.
+- Runtime encoder probing for AMD AMF, NVIDIA NVENC, Intel QSV, Windows Media
+  Foundation, and x264 CPU fallback.
+- Optional audio capture from any dshow input device.
+- Always-on-top pin for use over games.
+- Named presets for game layouts such as health, loadout, and killfeed.
+- Export and import `.crimsnap.json` configs.
+- Signed in-app updates with changelog preview, passive install, and restart
+  prompt.
+- Multi-monitor support with friendly display labels.
 
-## Install (no Node / Rust / anything needed)
+## Install
 
-1. Download the latest `Crimsnap-Setup.msi` from
-   [Releases](../../releases).
-2. Run the installer.
-3. Make sure **ffmpeg** is on your `PATH` (most builds ship it; if not,
-   grab a build from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) and
-   point Settings → ffmpeg → Browse at `ffmpeg.exe`).
+1. Download the latest installer from [Releases](../../releases).
+2. Run the MSI or setup exe.
+3. Make sure `ffmpeg.exe` is available.
 
-That's it. Crimsnap appears in the Start menu.
+If ffmpeg is not on your PATH, download a full Windows build from
+[gyan.dev](https://www.gyan.dev/ffmpeg/builds/) and point
+**Settings -> ffmpeg -> Browse** at `ffmpeg.exe`.
 
-## Quick start
+## Quick Start
 
-1. Hit **+ Pick a region**, draw a rect on the live screenshot of your monitor.
-2. Hit **● Record**. The frame glows crimson while recording.
-3. Hit **■ Stop**. The session lands in `Videos\Crimsnap\session\<timestamp>\`.
+1. Click **+ Pick a region** and draw a rectangle on the monitor preview.
+2. Click **Record**.
+3. Click **Stop**.
 
-For gamers:
+Recordings are saved under:
 
-1. Add three regions named `health`, `loadout`, `killfeed`.
-2. Tick **Also record full screen of …** for the gameplay track.
-3. **Save current** as a preset named after the game.
-4. Press **F9** to start/stop next time.
+```text
+Videos\Crimsnap\session\<timestamp>\
+```
 
-For window-specific capture (e.g. a Discord call, a chat window, an
-overlay): in the picker modal click **Specific window**, pick the title,
-done. Crimsnap follows the window even if you move or resize it.
+For gaming, create regions such as `health`, `loadout`, and `killfeed`, enable
+full-screen capture if wanted, then save the layout as a preset.
 
-## Build from source
+For window capture, open the picker, choose **Specific window**, select the
+window title, and save the region.
 
-You need **Node 18+ / pnpm**, **Rust** (MSVC toolchain), and **ffmpeg**.
+## Build From Source
+
+Requirements:
+
+- Node 18+
+- pnpm
+- Rust with the MSVC toolchain
+- ffmpeg
 
 ```powershell
-git clone https://github.com/InfernoTV/crimsnap
-cd crimsnap
+git clone https://github.com/InfernoTV/Crimsnap
+cd Crimsnap
 pnpm install
-pnpm tauri dev      # hot-reload dev mode
-pnpm tauri build    # release exe + MSI
+pnpm tauri dev
+pnpm tauri build
 ```
 
-The release exe lands at `src-tauri/target/release/crimsnap.exe`, the MSI at
-`src-tauri/target/release/bundle/msi/`.
+Release outputs are created in:
 
-## Publishing releases
-
-Before publishing publicly, replace the updater endpoint in
-`src-tauri/tauri.conf.json`:
-
-```json
-"https://github.com/InfernoTV/crimsnap/releases/latest/download/latest.json"
+```text
+src-tauri\target\release\
+src-tauri\target\release\bundle\
 ```
 
-The app checks that signed static JSON file, so normal users do not hit the
+## Publishing Releases
+
+The updater endpoint is configured as:
+
+```text
+https://github.com/InfernoTV/Crimsnap/releases/latest/download/latest.json
+```
+
+The app reads that static signed update feed, so normal users do not hit the
 GitHub REST API rate limit.
 
-Updater signing is already wired:
+GitHub Actions needs this repository secret:
 
-- `src-tauri/updater.key.pub` / the public key is safe to publish.
-- `src-tauri/updater.key` is private and is ignored by git.
-- Add the private key text to the GitHub secret `TAURI_SIGNING_PRIVATE_KEY`.
-- Add `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` too. It can be blank if you keep
-  the generated no-password local key, but a passworded key is better before
-  a serious public release.
-
-To release:
-
-```powershell
-git tag v0.1.0
-git push origin v0.1.0
+```text
+TAURI_SIGNING_PRIVATE_KEY
 ```
 
-The GitHub Action builds the MSI, NSIS setup exe, updater signatures, and
-`latest.json`, then uploads them to the matching GitHub Release.
+It is the full contents of local file:
 
-More detail lives in [docs/PUBLISHING.md](docs/PUBLISHING.md) and the
-step-by-step [GitHub release checklist](docs/GITHUB_RELEASE_CHECKLIST.md).
+```text
+src-tauri\updater.key
+```
 
-## Encoding notes
+That private key must never be committed. It is ignored by `.gitignore`.
 
-Crimsnap tests every encoder at runtime — compiled-into-ffmpeg ≠ actually
-working. On AMD systems with the AMF runtime installed, `h264_amf` is the
-fastest path. On AMD systems *without* it, Crimsnap falls back to
-`h264_mf` (Windows Media Foundation, the path OBS uses), which still uses
-the GPU. If everything fails it lands on `libx264` (CPU, slowest but
-universal).
+To publish the current version:
 
-### Bitrate guidance
+```powershell
+.\scripts\release-tag.ps1
+```
 
-| Resolution / FPS | Low (~QP 30) | Balanced (~QP 24) | High (~QP 20) | Lossless (~QP 16) |
+The workflow builds the Windows artifacts, signs update installers, generates
+`latest.json`, and uploads everything to the GitHub Release.
+
+Full details:
+
+- [Publishing guide](docs/PUBLISHING.md)
+- [GitHub release checklist](docs/GITHUB_RELEASE_CHECKLIST.md)
+
+## Updating Later
+
+1. Add a new top section to `CHANGELOG.md`, for example:
+
+   ```markdown
+   ## 0.2.0
+
+   - Added global hotkeys.
+   - Fixed overlay selection on high-DPI monitors.
+   ```
+
+2. Bump the same version in:
+
+   - `package.json`
+   - `src-tauri/Cargo.toml`
+   - `src-tauri/tauri.conf.json`
+
+3. Commit and push.
+4. Run:
+
+   ```powershell
+   .\scripts\release-tag.ps1 -Version 0.2.0
+   ```
+
+When users launch Crimsnap, it checks the signed `latest.json` feed at most
+once every 6 hours. If a newer version exists, it shows the changelog, installs
+passively, and asks the user to restart.
+
+## Encoding Notes
+
+Crimsnap tests encoders at runtime. A codec being compiled into ffmpeg does not
+mean it actually works on the current PC.
+
+Typical choices:
+
+- AMD systems: `h264_amf` when available.
+- NVIDIA systems: `h264_nvenc` when available.
+- Intel systems: `h264_qsv` when available.
+- Windows GPU fallback: `h264_mf`.
+- Universal fallback: `libx264`.
+
+## Bitrate Guidance
+
+| Resolution / FPS | Low | Balanced | High | Visually lossless |
 | --- | --- | --- | --- | --- |
 | 1080p60 | ~5 Mbps | ~10 Mbps | ~16 Mbps | ~26 Mbps |
 | 1440p60 | ~9 Mbps | ~17 Mbps | ~28 Mbps | ~45 Mbps |
 | 4K60 | ~20 Mbps | ~38 Mbps | ~62 Mbps | ~100 Mbps |
 
-For competitive gaming and uploads pick **High**. For long captures keep
+For competitive gaming and uploads, use **High**. For long sessions, use
 **Balanced**.
 
 ## Roadmap
 
-Things I'd like to add and that PRs are welcome on:
+- OBS-style canvas compositor for combining regions into one output.
+- Per-app audio mute through WASAPI session handling.
+- More global hotkeys.
+- GIF and WebP export for short clips.
 
-- **OBS-style canvas compositor** — drag regions onto a single output
-  canvas (today each region is its own file).
-- **Per-app audio mute** via WASAPI session enumeration.
-- **Global hotkeys** — separate per-action hotkeys (not just record toggle).
-- **GIF / WebP export** of short clips.
+## Known Limits
 
-## Known limits
-
-- Exclusive-fullscreen games can block the GDI capture path; run them
-  borderless for capture (works fine in practice with every modern engine).
-- `ddagrab` (GPU desktop-duplication) is in Settings → Capture as an
-  experimental backend; the default reliable `gdigrab` is what we test
-  with.
-- System-audio capture needs a loopback device. Easiest options: turn on
-  Stereo Mix in Windows Sound settings, install
-  [VB-Cable](https://vb-audio.com/Cable/), or install
-  [`virtual-audio-capturer`](https://github.com/rdp/virtual-audio-capturer).
+- Exclusive-fullscreen games can block GDI capture. Borderless mode is best.
+- `ddagrab` is experimental. `gdigrab` is the reliable default.
+- Desktop audio usually needs a loopback device such as Stereo Mix, VB-Cable,
+  or `virtual-audio-capturer`.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
