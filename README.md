@@ -78,8 +78,6 @@ pnpm tauri dev
 pnpm tauri build
 ```
 
-Maintainer release notes live in [docs/PUBLISHING.md](docs/PUBLISHING.md).
-
 ## Encoding Notes
 
 Crimsnap tests encoders at runtime. A codec being compiled into ffmpeg does not
