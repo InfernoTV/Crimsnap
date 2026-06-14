@@ -1,0 +1,96 @@
+name: release
+
+# Push a tag like `v0.2.0` to trigger a build that uploads the MSI + the
+# standalone exe to the matching GitHub Release.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Windows release
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Install frontend deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate release version
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $tagVersion = "${{ github.ref_name }}".TrimStart("v")
+          $appVersion = (Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json).version
+          if ($tagVersion -ne $appVersion) {
+            throw "Tag ${{ github.ref_name }} does not match src-tauri/tauri.conf.json version $appVersion"
+          }
+
+      - name: Build Tauri app (release)
+        run: pnpm tauri build
+
+      - name: Collect artifacts
+        id: artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force out | Out-Null
+          Copy-Item src-tauri/target/release/crimsnap.exe out/ -ErrorAction SilentlyContinue
+          Copy-Item src-tauri/target/release/bundle/msi/*.msi out/ -ErrorAction SilentlyContinue
+          Copy-Item src-tauri/target/release/bundle/nsis/*.exe out/ -ErrorAction SilentlyContinue
+          Get-ChildItem out | Format-Table -AutoSize
+
+      - name: Sign updater installers
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          $passwordArg = "--password=$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD"
+          $installers = Get-ChildItem out -File | Where-Object { $_.Name -like "*.msi" -or $_.Name -like "*setup.exe" }
+          foreach ($file in $installers) {
+            pnpm tauri signer sign $file.FullName $passwordArg
+          }
+
+      - name: Generate updater feed
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          ./scripts/make-latest-json.ps1 -Version "${{ github.ref_name }}" -Repository "${{ github.repository }}"
+          Get-ChildItem out | Format-Table -AutoSize
+
+      - name: Upload artifacts to workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: crimsnap-windows
+          path: out/*
+
+      - name: Publish to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: out/*
+          generate_release_notes: true

@@ -1,0 +1,34 @@
+{
+  "name": "crimsnap",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Crimsnap - lightweight crimson-neon region screen recorder",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/InfernoTV/crimsnap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/InfernoTV/crimsnap/issues"
+  },
+  "homepage": "https://github.com/InfernoTV/crimsnap#readme",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-updater": "^2.10.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0"
+  }
+}

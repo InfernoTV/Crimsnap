@@ -1,0 +1,158 @@
+:root {
+  --crimson: #ff2d55;
+  --crimson-soft: #ff5c78;
+  --glow: 0 0 12px rgba(255, 45, 85, 0.9), 0 0 28px rgba(255, 45, 85, 0.45);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  cursor: crosshair;
+  user-select: none;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+/* Initial full-screen dim. Hidden once a drag begins (the selection's
+   box-shadow then dims everything except the chosen region). */
+#scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 0, 4, 0.55);
+  transition: opacity 0.08s ease;
+}
+body.dragging #scrim {
+  opacity: 0;
+}
+
+/* Neon crosshair lines that track the cursor before a drag. */
+.xhair {
+  position: fixed;
+  background: linear-gradient(90deg, transparent, var(--crimson), transparent);
+  box-shadow: var(--glow);
+  pointer-events: none;
+  opacity: 0.85;
+}
+.xhair:not(.vert) {
+  left: 0;
+  width: 100%;
+  height: 1px;
+}
+.xhair.vert {
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, var(--crimson), transparent);
+}
+body.dragging .xhair {
+  display: none;
+}
+
+/* The selected region: transparent interior, neon frame, and a giant
+   box-shadow that dims the rest of the screen around it. */
+#sel {
+  position: fixed;
+  display: none;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border: 1.5px solid var(--crimson);
+  box-shadow: 0 0 0 100vmax rgba(8, 0, 4, 0.62), var(--glow),
+    inset 0 0 18px rgba(255, 45, 85, 0.18);
+  outline: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--crimson-soft);
+  box-shadow: var(--glow);
+}
+.corner.tl {
+  left: -2px;
+  top: -2px;
+  border-right: none;
+  border-bottom: none;
+}
+.corner.tr {
+  right: -2px;
+  top: -2px;
+  border-left: none;
+  border-bottom: none;
+}
+.corner.bl {
+  left: -2px;
+  bottom: -2px;
+  border-right: none;
+  border-top: none;
+}
+.corner.br {
+  right: -2px;
+  bottom: -2px;
+  border-left: none;
+  border-top: none;
+}
+
+#badge {
+  position: fixed;
+  display: none;
+  padding: 3px 9px;
+  font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #fff;
+  background: rgba(20, 2, 8, 0.85);
+  border: 1px solid var(--crimson);
+  border-radius: 6px;
+  box-shadow: var(--glow);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+#hint {
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  color: #ffd9e1;
+  background: rgba(20, 2, 8, 0.8);
+  border: 1px solid rgba(255, 45, 85, 0.5);
+  border-radius: 999px;
+  box-shadow: 0 0 20px rgba(255, 45, 85, 0.35);
+  pointer-events: none;
+}
+#hint b {
+  color: var(--crimson-soft);
+}
+body.dragging #hint {
+  display: none;
+}
+
+/* Quick confirmation flash on release. */
+#sel.flash {
+  animation: pop 0.18s ease-out;
+}
+@keyframes pop {
+  0% {
+    border-color: #fff;
+    box-shadow: 0 0 0 100vmax rgba(8, 0, 4, 0.62), 0 0 30px #fff,
+      inset 0 0 30px rgba(255, 255, 255, 0.4);
+  }
+  100% {
+    border-color: var(--crimson);
+  }
+}

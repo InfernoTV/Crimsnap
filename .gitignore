@@ -1,0 +1,10 @@
+node_modules
+dist
+.vite
+out
+src-tauri/target
+src-tauri/gen
+src-tauri/updater.key
+*.log
+.testrec
+.DS_Store

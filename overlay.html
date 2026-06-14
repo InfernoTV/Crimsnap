@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crimsnap — Select Region</title>
+    <link rel="stylesheet" href="/src/overlay.css" />
+  </head>
+  <body>
+    <div id="scrim"></div>
+    <div id="h-line" class="xhair"></div>
+    <div id="v-line" class="xhair vert"></div>
+    <div id="sel">
+      <span class="corner tl"></span><span class="corner tr"></span>
+      <span class="corner bl"></span><span class="corner br"></span>
+    </div>
+    <div id="badge"></div>
+    <div id="hint">drag to carve a region · <b>esc</b> to bail</div>
+    <script type="module" src="/src/overlay.ts"></script>
+  </body>
+</html>
